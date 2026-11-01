@@ -4,155 +4,550 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#103f30">
-<link rel="manifest" href="./manifest.json">
-<title>CRPF MESS MANAGER</title>
-<link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#063c2a">
+<title>CRPF Mess Management System</title>
+<style>
+:root{
+ --green:#063c2a;--deep:#022b1e;--light:#087b45;
+ --bright:#00b94f;--bg:#071b14;--panel:#0b3022;
+ --border:#287b52;--white:#fff;--muted:#b7cfc2;
+ --red:#e83e49;--yellow:#e5bb19;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:white;font-family:Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:225px;background:linear-gradient(180deg,#063d2b,#021d14);padding:15px 10px;flex-shrink:0;border-right:1px solid #287b52}
+.brand{text-align:center;padding:12px 5px 20px;border-bottom:1px solid #287b52}
+.logo{font-size:42px}
+.brand h2{font-size:19px;margin:5px 0;color:#ffd928}
+.brand small{color:#d2e6d9}
+.nav{margin-top:15px}
+.nav button{display:flex;align-items:center;gap:12px;width:100%;padding:12px 10px;margin:3px 0;border:0;border-radius:9px;background:transparent;color:#fff;text-align:left;font-weight:bold}
+.nav button:hover,.nav button.active{background:linear-gradient(90deg,#08a94d,#08773c)}
+.nav .ico{font-size:21px;width:26px;text-align:center}
+.main{flex:1;min-width:0}
+.topbar{background:#06402c;border-bottom:1px solid #287b52;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.topbar h1{font-size:23px;margin:0;color:#ffe329}
+.topbar small{color:#d0e4d8}
+.topright{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.top-pill{border:1px solid #69a987;padding:9px 13px;border-radius:30px;background:#0a5037}
+.content{padding:20px;max-width:1600px;margin:auto}
+.page{display:none}.page.active{display:block}
+.heading{margin:0 0 4px;font-size:25px}
+.subheading{color:var(--muted);margin-bottom:18px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:16px}
+.stat{padding:18px;border-radius:13px;background:linear-gradient(135deg,#0c5639,#082a20);border:1px solid #329365;box-shadow:0 5px 15px #0008}
+.stat .label{font-size:14px;color:#d6e9dd}
+.stat .number{font-size:25px;font-weight:bold;margin-top:8px}
+.stat .symbol{font-size:25px;float:right}
+.panel{background:linear-gradient(145deg,#0c3525,#061f17);border:1px solid #287b52;border-radius:13px;padding:15px;margin-bottom:15px;box-shadow:0 5px 15px #0006}
+.panel h3{margin:0 0 13px;font-size:19px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.btn{border:0;border-radius:7px;padding:10px 15px;background:#07964b;color:white;font-weight:bold}
+.btn:hover{filter:brightness(1.15)}
+.btn.secondary{background:#245a43}
+.btn.danger{background:#b82d39}
+.btn.warning{background:#a67b09}
+.btn.small{padding:6px 9px;font-size:12px;margin:2px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:13px}
+input,select,textarea{background:#061e16;color:white;border:1px solid #39845f;border-radius:7px;padding:10px;width:100%;min-width:0}
+input::placeholder,textarea::placeholder{color:#9bb8a7}
+.formgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.field label{display:block;font-size:12px;color:#b9d4c5;margin-bottom:5px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:650px}
+th,td{padding:10px 9px;border-bottom:1px solid #28533e;text-align:left;font-size:13px}
+th{background:#075334;color:#fff}
+tr:hover td{background:#ffffff08}
+.badge{padding:4px 8px;border-radius:20px;background:#087b45;font-size:11px}
+.badge.red{background:#a72c37}.badge.yellow{background:#94720c}
+.empty{text-align:center;color:#a9c4b4;padding:25px}
+.menurow{display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #28533e}
+.green{color:#35e987}.redtext{color:#ff7777}
+.footer{text-align:center;color:#829e8e;padding:20px;font-size:12px}
+@media(max-width:900px){
+ .sidebar{width:68px;padding:10px 5px}
+ .brand h2,.brand small,.nav .txt{display:none}
+ .nav button{justify-content:center;padding:13px 4px}
+ .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .grid3{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+ .sidebar{width:58px}
+ .content{padding:12px}
+ .topbar{padding:12px}
+ .topbar h1{font-size:17px}
+ .cards{gap:8px}
+ .stat{padding:12px}
+ .stat .number{font-size:19px}
+ .grid2,.grid3{grid-template-columns:1fr}
+ .formgrid{grid-template-columns:1fr 1fr}
+}
+</style>
 </head>
 <body>
-<header>
-  <h1>🛡️ CRPF MESS MANAGER</h1>
-  <p>Offline Mess Account & Store System</p>
+<div class="layout">
+<aside class="sidebar">
+ <div class="brand">
+  <div class="logo">🛡️</div>
+  <h2>CRPF MESS</h2>
+  <small>Cooking House System</small>
+ </div>
+ <nav class="nav" id="navigation">
+  <button class="active" data-page="dashboard"><span class="ico">▦</span><span class="txt">Dashboard</span></button>
+  <button data-page="members"><span class="ico">👥</span><span class="txt">Members</span></button>
+  <button data-page="store"><span class="ico">📦</span><span class="txt">Ration Store</span></button>
+  <button data-page="purchases"><span class="ico">🛒</span><span class="txt">Purchases</span></button>
+  <button data-page="recipes"><span class="ico">🍲</span><span class="txt">Recipes</span></button>
+  <button data-page="menu"><span class="ico">📅</span><span class="txt">Making Menu</span></button>
+  <button data-page="staff"><span class="ico">🛡️</span><span class="txt">Mess Staff</span></button>
+  <button data-page="accounts"><span class="ico">💰</span><span class="txt">Accounts</span></button>
+  <button data-page="reports"><span class="ico">📊</span><span class="txt">Reports & Records</span></button>
+  <button data-page="handover"><span class="ico">🔄</span><span class="txt">Mess Handover</span></button>
+  <button data-page="settings"><span class="ico">⚙️</span><span class="txt">Settings</span></button>
+  <button data-page="backup"><span class="ico">🗄️</span><span class="txt">Backup & Restore</span></button>
+ </nav>
+</aside>
+
+<main class="main">
+<header class="topbar">
+ <div>
+  <h1 id="messTitle">CRPF Mess Management System</h1>
+  <small>Cooking House | Ration | Menu | Accounts | Reports</small>
+ </div>
+ <div class="topright">
+  <span class="top-pill" id="messBadge">🏛️ Mess: A Coy (CRPF)</span>
+  <span class="top-pill" id="today"></span>
+  <span class="top-pill">👤 Mess NCO</span>
+ </div>
 </header>
 
-<nav>
-  <button onclick="show('dashboard')">Dashboard</button>
-  <button onclick="show('members')">Members</button>
-  <button onclick="show('store')">Ration Store</button>
-  <button onclick="show('purchases')">Purchases</button>
-  <button onclick="show('recipes')">Recipes</button>
-  <button onclick="show('meals')">Meals</button>
-  <button onclick="show('accounts')">Accounts</button>
-  <button onclick="show('backup')">Backup</button>
-</nav>
+<div class="content">
 
-<main>
-<section id="dashboard" class="page active">
-<h2>Mess Dashboard</h2>
-<div class="grid" id="stats"></div>
-<h3>Recent Transactions</h3>
-<div id="recent"></div>
+<section class="page active" id="dashboard">
+ <h2 class="heading">▦ Dashboard</h2>
+ <div class="subheading">Overview of Mess Operations</div>
+ <div class="cards">
+  <div class="stat"><span class="symbol">👥</span><div class="label">Active Members</div><div class="number" id="dMembers">0</div></div>
+  <div class="stat"><span class="symbol">🪙</span><div class="label">Mess Advance</div><div class="number" id="dAdvance">Rs 0</div></div>
+  <div class="stat"><span class="symbol">📦</span><div class="label">Ration Stock Items</div><div class="number" id="dItems">0</div></div>
+  <div class="stat"><span class="symbol">💎</span><div class="label">Stock Value</div><div class="number" id="dStock">Rs 0</div></div>
+  <div class="stat"><span class="symbol">🍽️</span><div class="label">Today's Meals</div><div class="number" id="dMeals">0</div></div>
+  <div class="stat"><span class="symbol">🛒</span><div class="label">Total Purchases</div><div class="number" id="dPurchase">Rs 0</div></div>
+  <div class="stat"><span class="symbol">📄</span><div class="label">Total Expenses</div><div class="number" id="dExpense">Rs 0</div></div>
+  <div class="stat"><span class="symbol">⚠️</span><div class="label">Unpaid Members</div><div class="number" id="dUnpaid">0</div></div>
+ </div>
+ <div class="grid2">
+  <div class="panel"><h3>🍽️ Today's Menu</h3><div id="todayMenu"></div></div>
+  <div class="panel"><h3>📊 Ration Stock Status</h3><div id="stockStatus"></div></div>
+ </div>
+ <div class="grid2">
+  <div class="panel"><h3>🔄 Recent Transactions</h3><div id="recentTransactions"></div></div>
+  <div class="panel"><h3>💳 Mess Balance Summary</h3><div id="balanceSummary"></div></div>
+ </div>
 </section>
 
-<section id="members" class="page">
-<h2>Members</h2>
-<div class="card">
-<input id="mno" placeholder="Force / Member Number">
-<input id="mname" placeholder="Full Name">
-<select id="mrank">
-<option>Constable</option><option>Head Constable</option>
-<option>ASI</option><option>SI</option><option>Inspector</option><option>Other</option>
-</select>
-<input id="mphone" placeholder="Mobile Number">
-<input id="mdate" type="date">
-<button onclick="addMember()">Add Member</button>
-</div>
-<div id="memberList"></div>
+<section class="page" id="members">
+ <h2 class="heading">👥 Members Management</h2><div class="subheading">Member registration and account details</div>
+ <div class="panel">
+  <h3>Add / Edit Member</h3>
+  <input type="hidden" id="memberId">
+  <div class="formgrid">
+   <div class="field"><label>Force Number</label><input id="forceNo" placeholder="Force No"></div>
+   <div class="field"><label>Member Name</label><input id="memberName" placeholder="Full name"></div>
+   <div class="field"><label>Rank</label><select id="rank"><option>Constable</option><option>Head Constable</option><option>ASI</option><option>SI</option><option>Inspector</option><option>Other</option></select></div>
+   <div class="field"><label>Contact Number</label><input id="phone" placeholder="Mobile number"></div>
+   <div class="field"><label>Joining Date</label><input id="joining" type="date"></div>
+   <div class="field"><label>Mess Advance (Rs)</label><input id="advance" type="number" value="0"></div>
+   <div class="field"><label>Status</label><select id="memberStatus"><option>Active</option><option>Transferred</option><option>Inactive</option></select></div>
+  </div>
+  <button class="btn" onclick="saveMember()">Save Member</button>
+  <button class="btn secondary" onclick="clearMember()">Clear</button>
+ </div>
+ <div class="panel"><div class="toolbar"><input id="memberSearch" placeholder="Search force number or name..." oninput="renderMembers()"></div><div class="tablewrap" id="membersTable"></div></div>
 </section>
 
-<section id="store" class="page">
-<h2>Ration Store</h2>
-<div class="card">
-<input id="itemName" placeholder="Item Name">
-<select id="itemUnit">
-<option value="kg">KG</option><option value="l">Litre</option><option value="pcs">Piece</option>
-</select>
-<button onclick="addItem()">Add Store Item</button>
-</div>
-<p class="note">Purchase KG/Litre/Piece mein hogi. Stock gram/ml/piece mein automatically convert hoga.</p>
-<div id="storeList"></div>
+<section class="page" id="store">
+ <h2 class="heading">📦 Ration Store</h2><div class="subheading">Stock register and available ration</div>
+ <div class="panel">
+  <h3>Add Ration Item</h3><input type="hidden" id="itemId">
+  <div class="formgrid">
+   <div class="field"><label>Item Name</label><input id="itemName" placeholder="Rice, Dal, Oil..."></div>
+   <div class="field"><label>Stock Unit</label><select id="itemUnit"><option value="kg">KG</option><option value="ltr">Litre</option><option value="pcs">Piece</option></select></div>
+   <div class="field"><label>Minimum Stock</label><input id="minimum" type="number" value="1"></div>
+  </div>
+  <button class="btn" onclick="saveItem()">Save Item</button>
+  <button class="btn secondary" onclick="clearItem()">Clear</button>
+ </div>
+ <div class="panel"><div class="tablewrap" id="storeTable"></div></div>
 </section>
 
-<section id="purchases" class="page">
-<h2>Ration Purchases</h2>
-<div class="card">
-<label>Item</label><select id="pItem"></select>
-<label>Purchase Quantity</label><input id="pQty" type="number" step="any" placeholder="Quantity">
-<label>Purchase Unit</label>
-<select id="pUnit">
-<option value="kg">KG</option><option value="g">Gram</option>
-<option value="l">Litre</option><option value="ml">ML</option>
-<option value="pcs">Piece</option>
-</select>
-<label>Rate per selected unit (Rs)</label>
-<input id="pRate" type="number" step="any" placeholder="Unit price">
-<input id="pSupplier" placeholder="Supplier">
-<input id="pDate" type="date">
-<button onclick="addPurchase()">Save Purchase</button>
-</div>
-<div id="purchaseList"></div>
+<section class="page" id="purchases">
+ <h2 class="heading">🛒 Ration Purchases</h2><div class="subheading">Purchase entry, price and stock update</div>
+ <div class="panel">
+  <h3>New Purchase</h3><input type="hidden" id="purchaseId">
+  <div class="formgrid">
+   <div class="field"><label>Date</label><input id="purchaseDate" type="date"></div>
+   <div class="field"><label>Ration Item</label><select id="purchaseItem"></select></div>
+   <div class="field"><label>Purchase Quantity</label><input id="purchaseQty" type="number" step="0.001" placeholder="Quantity"></div>
+   <div class="field"><label>Purchase Unit</label><select id="purchaseUnit"><option value="kg">KG</option><option value="g">Gram</option><option value="ltr">Litre</option><option value="ml">ML</option><option value="pcs">Piece</option><option value="pkt">Packet</option></select></div>
+   <div class="field"><label>Price per Unit (Rs)</label><input id="purchaseRate" type="number" step="0.01"></div>
+   <div class="field"><label>Supplier</label><input id="supplier" placeholder="Supplier name"></div>
+   <div class="field"><label>Bill Number</label><input id="billNo" placeholder="Bill number"></div>
+  </div>
+  <button class="btn" onclick="savePurchase()">Save Purchase</button>
+  <button class="btn secondary" onclick="clearPurchase()">Clear</button>
+ </div>
+ <div class="panel"><div class="tablewrap" id="purchaseTable"></div></div>
 </section>
 
-<section id="recipes" class="page">
-<h2>Recipes</h2>
-<div class="card">
-<input id="rName" placeholder="Recipe Name">
-<div class="row">
-<select id="rItem"></select>
-<input id="rQty" type="number" step="any" placeholder="Quantity">
-<select id="rUnit">
-<option value="g">Gram</option><option value="ml">ML</option><option value="pcs">Piece</option>
-</select>
-</div>
-<button onclick="addIngredient()">Add Ingredient</button>
-<div id="ingredientDraft"></div>
-<button onclick="saveRecipe()">Save Recipe</button>
-</div>
-<div id="recipeList"></div>
+<section class="page" id="recipes">
+ <h2 class="heading">🍲 Recipes</h2><div class="subheading">Recipe ingredients and automatic cost calculation</div>
+ <div class="panel">
+  <h3>Create Recipe</h3>
+  <div class="formgrid">
+   <div class="field"><label>Recipe Name</label><input id="recipeName" placeholder="Rice, Dal, Chicken..."></div>
+   <div class="field"><label>Servings</label><input id="recipeServings" type="number" value="1" min="1"></div>
+  </div>
+  <div class="formgrid">
+   <div class="field"><label>Ingredient</label><select id="ingredient"></select></div>
+   <div class="field"><label>Quantity</label><input id="ingredientQty" type="number" step="0.001"></div>
+   <div class="field"><label>Unit</label><select id="ingredientUnit"><option value="g">Gram</option><option value="ml">ML</option><option value="pcs">Piece</option></select></div>
+  </div>
+  <button class="btn secondary" onclick="addIngredient()">+ Add Ingredient</button>
+  <div id="ingredientList" style="margin:12px 0"></div>
+  <button class="btn" onclick="saveRecipe()">Save Recipe</button>
+ </div>
+ <div class="panel"><div class="tablewrap" id="recipeTable"></div></div>
 </section>
 
-<section id="meals" class="page">
-<h2>Making Menu / Meals</h2>
-<div class="card">
-<input id="mealDate" type="date">
-<select id="mealType">
-<option>Morning Tea</option><option>Breakfast</option>
-<option>Lunch</option><option>Midday Tea</option><option>Dinner</option>
-</select>
-<select id="mealRecipe"></select>
-<input id="mealServings" type="number" min="1" value="1" placeholder="Servings">
-<button onclick="showMealCost()">Calculate Cost</button>
-<div id="mealPreview"></div>
-<div id="mealMembers"></div>
-<button onclick="confirmMeal()">Confirm Meal & Deduct Stock</button>
-</div>
-<div id="mealList"></div>
+<section class="page" id="menu">
+ <h2 class="heading">📅 Making Menu</h2><div class="subheading">Daily meal planning and ration consumption</div>
+ <div class="panel">
+  <h3>Plan Meal</h3>
+  <div class="formgrid">
+   <div class="field"><label>Date</label><input id="mealDate" type="date"></div>
+   <div class="field"><label>Meal Type</label><select id="mealType"><option>Morning Tea</option><option>Breakfast</option><option>Lunch</option><option>Midday Tea</option><option>Dinner</option></select></div>
+   <div class="field"><label>Recipe</label><select id="mealRecipe"></select></div>
+   <div class="field"><label>Servings</label><input id="mealServings" type="number" value="1"></div>
+  </div>
+  <button class="btn" onclick="saveMeal()">Save Menu</button>
+  <button class="btn warning" onclick="confirmMeal()">Confirm Meal & Deduct Stock</button>
+ </div>
+ <div class="panel"><div class="tablewrap" id="menuTable"></div></div>
 </section>
 
-<section id="accounts" class="page">
-<h2>Accounts</h2>
-<div class="card">
-<select id="aMember"></select>
-<select id="aType">
-<option value="deposit">Member Deposit / Advance</option>
-<option value="expense">Mess Expense</option>
-</select>
-<input id="aAmount" type="number" step="any" placeholder="Amount Rs">
-<input id="aNote" placeholder="Details">
-<button onclick="addTransaction()">Save Transaction</button>
-</div>
-<div id="accountList"></div>
+<section class="page" id="staff">
+ <h2 class="heading">🛡️ Mess Staff & Duty</h2><div class="subheading">Mess staff duty assignment</div>
+ <div class="panel">
+  <h3>Assign Duty</h3>
+  <div class="formgrid">
+   <div class="field"><label>Staff Member</label><select id="staffMember"></select></div>
+   <div class="field"><label>Duty</label><select id="staffDuty"><option>Mess NCO</option><option>Mess SO</option><option>Cook</option><option>Assistant Cook</option><option>Storekeeper</option><option>Mess Staff</option></select></div>
+   <div class="field"><label>From Date</label><input id="dutyDate" type="date"></div>
+  </div>
+  <button class="btn" onclick="saveStaff()">Save Duty</button>
+ </div>
+ <div class="panel"><div class="tablewrap" id="staffTable"></div></div>
 </section>
 
-<section id="backup" class="page">
-<h2>Backup & Restore</h2>
-<div class="card">
-<button onclick="downloadBackup()">Download JSON Backup</button>
-<label>Restore JSON Backup</label>
-<input type="file" id="restoreFile" accept=".json">
-<button onclick="restoreBackup()">Restore Data</button>
-</div>
+<section class="page" id="accounts">
+ <h2 class="heading">💰 Accounts</h2><div class="subheading">Deposits, expenses and member balances</div>
+ <div class="panel">
+  <h3>New Transaction</h3>
+  <div class="formgrid">
+   <div class="field"><label>Date</label><input id="accountDate" type="date"></div>
+   <div class="field"><label>Transaction Type</label><select id="accountType"><option value="deposit">Member Deposit</option><option value="expense">Mess Expense</option></select></div>
+   <div class="field"><label>Member</label><select id="accountMember"></select></div>
+   <div class="field"><label>Amount (Rs)</label><input id="accountAmount" type="number"></div>
+   <div class="field"><label>Particulars</label><input id="accountNote" placeholder="Details"></div>
+  </div>
+  <button class="btn" onclick="saveTransaction()">Save Transaction</button>
+ </div>
+ <div class="panel"><h3>Member Balances</h3><div class="tablewrap" id="balanceTable"></div></div>
+ <div class="panel"><h3>Account Ledger</h3><div class="tablewrap" id="ledgerTable"></div></div>
 </section>
+
+<section class="page" id="reports">
+ <h2 class="heading">📊 Reports & Records</h2><div class="subheading">Transaction and mess reports</div>
+ <div class="panel">
+  <div class="toolbar">
+   <button class="btn" onclick="window.print()">Print / Save PDF</button>
+   <button class="btn secondary" onclick="exportCSV()">Export CSV</button>
+  </div>
+  <div class="tablewrap" id="reportTable"></div>
+ </div>
+</section>
+
+<section class="page" id="handover">
+ <h2 class="heading">🔄 Mess Handover</h2><div class="subheading">Outgoing and incoming NCO account summary</div>
+ <div class="panel">
+  <div class="formgrid">
+   <div class="field"><label>Outgoing NCO</label><input id="outNco" placeholder="Outgoing NCO name"></div>
+   <div class="field"><label>Incoming NCO</label><input id="inNco" placeholder="Incoming NCO name"></div>
+   <div class="field"><label>Handover Date</label><input id="handDate" type="date"></div>
+  </div>
+  <div id="handoverSummary"></div>
+  <button class="btn" onclick="printHandover()">Print Handover Report</button>
+ </div>
+</section>
+
+<section class="page" id="settings">
+ <h2 class="heading">⚙️ Settings</h2><div class="subheading">Mess information and ration budget</div>
+ <div class="panel">
+  <div class="formgrid">
+   <div class="field"><label>Mess Name</label><input id="settingName"></div>
+   <div class="field"><label>Monthly Ration Budget (Rs)</label><input id="settingBudget" type="number"></div>
+   <div class="field"><label>Currency</label><select id="currency"><option>Rs</option></select></div>
+  </div>
+  <button class="btn" onclick="saveSettings()">Save Settings</button>
+ </div>
+</section>
+
+<section class="page" id="backup">
+ <h2 class="heading">🗄️ Backup & Restore</h2><div class="subheading">Your data is stored in this browser</div>
+ <div class="panel">
+  <h3>Backup Data</h3>
+  <p>Download a copy of your mess records regularly.</p>
+  <button class="btn" onclick="backupData()">Download Backup JSON</button>
+ </div>
+ <div class="panel">
+  <h3>Restore Data</h3>
+  <input type="file" id="restoreFile" accept=".json,application/json">
+  <br><br><button class="btn warning" onclick="restoreData()">Restore Backup</button>
+ </div>
+</section>
+
+</div>
+<div class="footer">CRPF Mess Management System | Local Data Storage</div>
 </main>
+</div>
 
-<script src="app.js"></script>
 <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js");
-  });
+const KEY="crpf_mess_manager_v1";
+const blank=()=>({members:[],items:[],purchases:[],recipes:[],meals:[],staff:[],ledger:[],settings:{name:"A Coy (CRPF)",budget:0}});
+let db;
+try{db=JSON.parse(localStorage.getItem(KEY))||blank()}catch(e){db=blank()}
+let ingredients=[];
+let selectedMeal=null;
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toISOString().slice(0,10);
+const money=n=>"Rs "+Number(n||0).toLocaleString("en-IN",{maximumFractionDigits:2});
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const save=()=>{localStorage.setItem(KEY,JSON.stringify(db));render()};
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const unitFactor=u=>({kg:1000,g:1,ltr:1000,ml:1,pcs:1,pkt:1}[u]||1);
+const baseUnit=u=>u==="kg"||u==="g"?"g":u==="ltr"||u==="ml"?"ml":u;
+const displayQty=(n,u)=>Number(n||0).toLocaleString("en-IN",{maximumFractionDigits:2})+" "+u;
+function rate(item){return item.stock>0?item.value/item.stock:0}
+function stockValue(){return db.items.reduce((s,x)=>s+x.value,0)}
+function totalExpenses(){return db.ledger.filter(x=>x.type==="expense").reduce((s,x)=>s+x.amount,0)}
+function totalDeposits(){return db.ledger.filter(x=>x.type==="deposit").reduce((s,x)=>s+x.amount,0)}
+function memberBalance(m){return db.ledger.filter(x=>x.memberId===m.id).reduce((s,x)=>s+(x.type==="deposit"?x.amount:-x.amount),Number(m.advance||0))}
+function table(headers,rows){return "<table><thead><tr>"+headers.map(x=>"<th>"+x+"</th>").join("")+"</tr></thead><tbody>"+(rows.length?rows.join(""):'<tr><td colspan="'+headers.length+'" class="empty">No records found</td></tr>')+"</tbody></table>"}
+function actions(type,id){return `<button class="btn small secondary" onclick="viewRecord('${type}','${id}')">View</button><button class="btn small warning" onclick="editRecord('${type}','${id}')">Edit</button><button class="btn small danger" onclick="deleteRecord('${type}','${id}')">Delete</button>`}
+function navigate(page){
+ document.querySelectorAll(".page").forEach(x=>x.classList.toggle("active",x.id===page));
+ document.querySelectorAll(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.page===page));
 }
+$("navigation").addEventListener("click",e=>{let b=e.target.closest("button[data-page]");if(b)navigate(b.dataset.page)});
+function clearMember(){["memberId","forceNo","memberName","phone","joining"].forEach(x=>$(x).value="");$("advance").value=0;$("memberStatus").value="Active"}
+function saveMember(){
+ let name=$("memberName").value.trim(),force=$("forceNo").value.trim();
+ if(!name||!force)return alert("Force Number and Name required");
+ let id=$("memberId").value||uid(),old=db.members.find(x=>x.id===id);
+ let m={id,force,name,rank:$("rank").value,phone:$("phone").value,joining:$("joining").value,advance:Number($("advance").value||0),status:$("memberStatus").value};
+ if(old)Object.assign(old,m);else db.members.push(m);
+ clearMember();save();
+}
+function clearItem(){["itemId","itemName"].forEach(x=>$(x).value="");$("itemUnit").value="kg";$("minimum").value=1}
+function saveItem(){
+ let name=$("itemName").value.trim();if(!name)return alert("Item name required");
+ let id=$("itemId").value||uid(),old=db.items.find(x=>x.id===id);
+ let x={id,name,unit:$("itemUnit").value,minimum:Number($("minimum").value||0),stock:old?.stock||0,value:old?.value||0};
+ if(old)Object.assign(old,x);else db.items.push(x);
+ clearItem();save();
+}
+function clearPurchase(){["purchaseId","purchaseQty","purchaseRate","supplier","billNo"].forEach(x=>$(x).value="");$("purchaseDate").value=today()}
+function savePurchase(){
+ let item=db.items.find(x=>x.id===$("purchaseItem").value);
+ let qty=Number($("purchaseQty").value),price=Number($("purchaseRate").value),u=$("purchaseUnit").value;
+ if(!item||qty<=0||price<0)return alert("Select item and enter valid quantity and price");
+ if(baseUnit(item.unit)!==baseUnit(u))return alert("Purchase unit does not match this item's type");
+ let id=$("purchaseId").value||uid(),old=db.purchases.find(x=>x.id===id);
+ if(old){
+  let oldItem=db.items.find(x=>x.id===old.itemId);
+  if(oldItem){oldItem.stock-=old.baseQty;oldItem.value-=old.total}
+ }
+ let factor=unitFactor(u),baseQty=qty*factor,total=qty*price;
+ item.stock+=baseQty;item.value+=total;
+ let p={id,date:$("purchaseDate").value||today(),itemId:item.id,item:item.name,qty,unit:u,baseQty,total,rate:price,supplier:$("supplier").value,bill:$("billNo").value};
+ if(old)Object.assign(old,p);else db.purchases.push(p);
+ clearPurchase();save();
+}
+function addIngredient(){
+ let item=db.items.find(x=>x.id===$("ingredient").value),qty=Number($("ingredientQty").value),u=$("ingredientUnit").value;
+ if(!item||qty<=0)return alert("Select ingredient and quantity");
+ if(baseUnit(item.unit)!==baseUnit(u))return alert("Ingredient unit must match the store item type");
+ ingredients.push({itemId:item.id,name:item.name,qty:qty*unitFactor(u),unit:baseUnit(u)});
+ $("ingredientQty").value="";renderIngredients();
+}
+function renderIngredients(){
+ $("ingredientList").innerHTML=ingredients.map((x,i)=>`<div class="menurow">${esc(x.name)} — ${displayQty(x.qty,x.unit)} <button class="btn small danger" onclick="ingredients.splice(${i},1);renderIngredients()">Remove</button></div>`).join("");
+}
+function saveRecipe(){
+ let name=$("recipeName").value.trim(),servings=Number($("recipeServings").value);
+ if(!name||!ingredients.length||servings<1)return alert("Enter recipe name, servings and ingredients");
+ db.recipes.push({id:uid(),name,servings,ingredients:ingredients.map(x=>({...x}))});
+ $("recipeName").value="";ingredients=[];renderIngredients();save();
+}
+function recipeCost(r){return r.ingredients.reduce((s,x)=>{let it=db.items.find(i=>i.id===x.itemId);return s+x.qty*(it?rate(it):0)},0)}
+function saveMeal(){
+ let r=db.recipes.find(x=>x.id===$("mealRecipe").value),servings=Number($("mealServings").value);
+ if(!r||servings<1)return alert("Select a recipe and servings");
+ db.meals.push({id:uid(),date:$("mealDate").value||today(),type:$("mealType").value,recipeId:r.id,recipe:r.name,servings,cost:recipeCost(r)*servings,confirmed:false});
+ save();
+}
+function confirmMeal(){
+ let m=db.meals.filter(x=>!x.confirmed).slice(-1)[0];if(!m)return alert("No unconfirmed meal found");
+ let r=db.recipes.find(x=>x.id===m.recipeId);if(!r)return alert("Recipe not found");
+ for(let x of r.ingredients){let it=db.items.find(i=>i.id===x.itemId);if(!it||it.stock<x.qty*m.servings)return alert("Insufficient stock: "+x.name)}
+ for(let x of r.ingredients){let it=db.items.find(i=>i.id===x.itemId);let amount=x.qty*m.servings;let unitRate=rate(it);it.stock-=amount;it.value=Math.max(0,it.value-amount*unitRate)}
+ m.confirmed=true;
+ db.ledger.push({id:uid(),date:today(),type:"expense",amount:m.cost,note:"Meal: "+m.recipe,memberId:null});
+ save();alert("Meal confirmed and ration stock deducted.");
+}
+function saveStaff(){
+ let m=db.members.find(x=>x.id===$("staffMember").value);if(!m)return alert("Select staff member");
+ db.staff.push({id:uid(),memberId:m.id,name:m.name,duty:$("staffDuty").value,date:$("dutyDate").value||today()});save();
+}
+function saveTransaction(){
+ let type=$("accountType").value,amount=Number($("accountAmount").value);
+ if(amount<=0)return alert("Enter valid amount");
+ let memberId=$("accountMember").value||null;
+ if(type==="deposit"&&!memberId)return alert("Select member for deposit");
+ db.ledger.push({id:uid(),date:$("accountDate").value||today(),type,amount,memberId,note:$("accountNote").value});
+ $("accountAmount").value="";$("accountNote").value="";save();
+}
+function saveSettings(){
+ db.settings.name=$("settingName").value.trim()||"Mess";
+ db.settings.budget=Number($("settingBudget").value||0);save();alert("Settings saved");
+}
+function renderMembers(){
+ let q=($("memberSearch")?.value||"").toLowerCase();
+ let rows=db.members.filter(m=>(m.name+" "+m.force).toLowerCase().includes(q)).map(m=>`<tr><td>${esc(m.force)}</td><td>${esc(m.name)}</td><td>${esc(m.rank)}</td><td>${esc(m.phone)}</td><td>${esc(m.joining)}</td><td>${money(memberBalance(m))}</td><td><span class="badge">${esc(m.status)}</span></td><td>${actions("member",m.id)}</td></tr>`);
+ $("membersTable").innerHTML=table(["Force No","Name","Rank","Contact","Joining","Balance","Status","Action"],rows);
+}
+function renderStore(){
+ $("storeTable").innerHTML=table(["Item","Available Stock","Average Rate","Stock Value","Status","Action"],db.items.map(x=>{
+ let low=x.stock<=x.minimum;return `<tr><td>${esc(x.name)}</td><td>${displayQty(x.stock,x.unit==="kg"?"g":x.unit==="ltr"?"ml":"pcs")}</td><td>${money(rate(x))} / base unit</td><td>${money(x.value)}</td><td><span class="badge ${low?"red":""}">${low?"Low Stock":"Normal"}</span></td><td>${actions("item",x.id)}</td></tr>`
+ }));
+}
+function renderPurchases(){
+ $("purchaseTable").innerHTML=table(["Date","Item","Quantity","Rate","Total","Supplier","Bill","Action"],db.purchases.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.item)}</td><td>${displayQty(x.qty,x.unit)}</td><td>${money(x.rate)}</td><td>${money(x.total)}</td><td>${esc(x.supplier)}</td><td>${esc(x.bill)}</td><td>${actions("purchase",x.id)}</td></tr>`));
+}
+function renderRecipes(){
+ $("recipeTable").innerHTML=table(["Recipe","Ingredients","Servings","Total Cost","Cost / Serving","Action"],db.recipes.map(r=>`<tr><td>${esc(r.name)}</td><td>${r.ingredients.map(x=>esc(x.name)+" "+displayQty(x.qty,x.unit)).join("<br>")}</td><td>${r.servings}</td><td>${money(recipeCost(r))}</td><td>${money(recipeCost(r)/r.servings)}</td><td>${actions("recipe",r.id)}</td></tr>`));
+}
+function renderMenu(){
+ $("menuTable").innerHTML=table(["Date","Meal","Recipe","Servings","Cost","Status","Action"],db.meals.map(m=>`<tr><td>${esc(m.date)}</td><td>${esc(m.type)}</td><td>${esc(m.recipe)}</td><td>${m.servings}</td><td>${money(m.cost)}</td><td>${m.confirmed?"Confirmed":"Planned"}</td><td>${actions("meal",m.id)}</td></tr>`));
+}
+function renderStaff(){
+ $("staffTable").innerHTML=table(["Staff Member","Duty","Date","Action"],db.staff.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.duty)}</td><td>${esc(x.date)}</td><td>${actions("staff",x.id)}</td></tr>`));
+}
+function renderAccounts(){
+ $("balanceTable").innerHTML=table(["Force No","Member","Advance / Balance","Account Status"],db.members.map(m=>{let b=memberBalance(m);return `<tr><td>${esc(m.force)}</td><td>${esc(m.name)}</td><td>${money(b)}</td><td>${b<0?'<span class="badge red">Due</span>':'<span class="badge">Credit</span>'}</td></tr>`}));
+ $("ledgerTable").innerHTML=table(["Date","Particulars","Type","Member","Amount","Action"],db.ledger.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.note)}</td><td>${esc(x.type)}</td><td>${esc(db.members.find(m=>m.id===x.memberId)?.name||"Mess")}</td><td>${money(x.amount)}</td><td>${actions("ledger",x.id)}</td></tr>`));
+}
+function renderReports(){
+ $("reportTable").innerHTML=table(["Date","Particulars","Type","Amount"],db.ledger.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.note)}</td><td>${esc(x.type)}</td><td>${money(x.amount)}</td></tr>`));
+}
+function renderHandover(){
+ let deposits=totalDeposits(),expenses=totalExpenses(),due=db.members.reduce((s,m)=>s+Math.max(0,-memberBalance(m)),0);
+ $("handoverSummary").innerHTML=`<div class="menurow"><span>Members</span><b>${db.members.length}</b></div><div class="menurow"><span>Ration Stock Value</span><b>${money(stockValue())}</b></div><div class="menurow"><span>Member Deposits</span><b>${money(deposits)}</b></div><div class="menurow"><span>Total Expenses</span><b>${money(expenses)}</b></div><div class="menurow"><span>Member Due</span><b>${money(due)}</b></div><div class="menurow"><span>Available Cash (recorded deposits less expenses)</span><b>${money(deposits-expenses)}</b></div>`;
+}
+function renderDashboard(){
+ $("dMembers").textContent=db.members.filter(x=>x.status==="Active").length;
+ $("dAdvance").textContent=money(db.members.reduce((s,m)=>s+Number(m.advance||0),0));
+ $("dItems").textContent=db.items.length;$("dStock").textContent=money(stockValue());
+ $("dMeals").textContent=db.meals.filter(x=>x.date===today()).length;
+ $("dPurchase").textContent=money(db.purchases.reduce((s,x)=>s+x.total,0));
+ $("dExpense").textContent=money(totalExpenses());
+ $("dUnpaid").textContent=db.members.filter(m=>memberBalance(m)<0).length;
+ $("todayMenu").innerHTML=db.meals.filter(x=>x.date===today()).map(x=>`<div class="menurow"><b>${esc(x.type)}</b><span>${esc(x.recipe)}</span></div>`).join("")||'<div class="empty">No menu added for today</div>';
+ let normal=db.items.filter(x=>x.stock>x.minimum).length,low=db.items.length-normal;
+ $("stockStatus").innerHTML=`<div class="menurow">🟢 Normal Stock <b>${normal}</b></div><div class="menurow">🟡 Low Stock <b>${low}</b></div><div class="menurow">Total Items <b>${db.items.length}</b></div>`;
+ $("recentTransactions").innerHTML=db.ledger.slice(-5).reverse().map(x=>`<div class="menurow"><span>${esc(x.date)} — ${esc(x.note)}</span><b>${money(x.amount)}</b></div>`).join("")||'<div class="empty">No transactions</div>';
+ $("balanceSummary").innerHTML=`<div class="menurow">Total Deposits <b>${money(totalDeposits())}</b></div><div class="menurow">Total Expenses <b>${money(totalExpenses())}</b></div><div class="menurow">Remaining Recorded Cash <b class="green">${money(totalDeposits()-totalExpenses())}</b></div><div class="menurow">Stock Value <b>${money(stockValue())}</b></div>`;
+}
+function fillSelect(id,arr,label){
+ let el=$(id),old=el.value;el.innerHTML='<option value="">Select</option>'+arr.map(x=>`<option value="${x.id}">${esc(label(x))}</option>`).join("");if(arr.some(x=>x.id===old))el.value=old;
+}
+function render(){
+ fillSelect("purchaseItem",db.items,x=>x.name);
+ fillSelect("ingredient",db.items,x=>x.name);
+ fillSelect("mealRecipe",db.recipes,x=>x.name);
+ fillSelect("staffMember",db.members,x=>x.force+" - "+x.name);
+ fillSelect("accountMember",db.members,x=>x.force+" - "+x.name);
+ renderMembers();renderStore();renderPurchases();renderRecipes();renderMenu();renderStaff();renderAccounts();renderReports();renderDashboard();renderHandover();
+ $("messBadge").textContent="🏛️ Mess: "+db.settings.name;
+ $("settingName").value=db.settings.name;$("settingBudget").value=db.settings.budget;
+}
+function findRecord(type,id){
+ let map={member:"members",item:"items",purchase:"purchases",recipe:"recipes",meal:"meals",staff:"staff",ledger:"ledger"};
+ return db[map[type]]?.find(x=>x.id===id);
+}
+function viewRecord(type,id){
+ let x=findRecord(type,id);if(!x)return;
+ alert(JSON.stringify(x,null,2));
+}
+function editRecord(type,id){
+ let x=findRecord(type,id);if(!x)return;
+ if(type==="member"){
+  navigate("members");$("memberId").value=x.id;$("forceNo").value=x.force;$("memberName").value=x.name;$("rank").value=x.rank;$("phone").value=x.phone;$("joining").value=x.joining;$("advance").value=x.advance;$("memberStatus").value=x.status;
+ }else if(type==="item"){
+  navigate("store");$("itemId").value=x.id;$("itemName").value=x.name;$("itemUnit").value=x.unit;$("minimum").value=x.minimum;
+ }else if(type==="purchase"){
+  navigate("purchases");$("purchaseId").value=x.id;$("purchaseDate").value=x.date;$("purchaseItem").value=x.itemId;$("purchaseQty").value=x.qty;$("purchaseUnit").value=x.unit;$("purchaseRate").value=x.rate;$("supplier").value=x.supplier;$("billNo").value=x.bill;
+ }else alert("Is record ka edit form agle development step mein add hoga.");
+}
+function deleteRecord(type,id){
+ if(!confirm("Are you sure? This record will be deleted."))return;
+ let map={member:"members",item:"items",purchase:"purchases",recipe:"recipes",meal:"meals",staff:"staff",ledger:"ledger"};
+ let arr=db[map[type]];if(!arr)return;
+ let x=arr.find(v=>v.id===id);
+ if(type==="purchase"&&x){
+  let it=db.items.find(v=>v.id===x.itemId);
+  if(it){it.stock-=x.baseQty;it.value-=x.total}
+ }
+ arr.splice(arr.findIndex(v=>v.id===id),1);save();
+}
+function backupData(){
+ let blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json"});
+ let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="CRPF_Mess_Backup_"+today()+".json";a.click();URL.revokeObjectURL(a.href);
+}
+function restoreData(){
+ let f=$("restoreFile").files[0];if(!f)return alert("Select backup JSON file");
+ let reader=new FileReader();reader.onload=()=>{try{let x=JSON.parse(reader.result);if(!x.members||!x.items)throw Error();db=x;save();alert("Backup restored")}catch(e){alert("Invalid backup file")}};reader.readAsText(f);
+}
+function exportCSV(){
+ let rows=[["Date","Particulars","Type","Amount"],...db.ledger.map(x=>[x.date,x.note,x.type,x.amount])];
+ let csv=rows.map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\n");
+ let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="Mess_Transactions.csv";a.click();
+}
+function printHandover(){
+ let w=window.open("","_blank");if(!w)return alert("Allow popups to print");
+ w.document.write("<h1>CRPF Mess Handover Report</h1><p>Outgoing NCO: "+esc($("outNco").value)+"</p><p>Incoming NCO: "+esc($("inNco").value)+"</p><p>Date: "+esc($("handDate").value)+"</p>"+$("handoverSummary").innerHTML);
+ w.document.close();w.print();
+}
+function setDates(){
+ $("today").textContent=new Date().toLocaleDateString("en-GB");
+ ["purchaseDate","mealDate","dutyDate","accountDate","handDate"].forEach(id=>$(id).value=today());
+}
+setDates();render();
 </script>
-  
 </body>
 </html>
