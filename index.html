@@ -238,5 +238,14 @@ $("pDate").value=$("mealDate").value=$("tDate").value=$("hDate").value=today();
 render();
 if("serviceWorker" in navigator && location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
 </script>
+  <script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(() => console.log("CRPF MESS Offline Ready"))
+      .catch(error => console.error("Service Worker Error:", error));
+  });
+}
+</script>
 </body>
 </html>
