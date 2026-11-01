@@ -1,0 +1,576 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRPF MESS Management System</title>
+<style>
+:root{
+ --green:#064b30;
+ --deep:#002d1d;
+ --light:#087b45;
+ --bright:#00c853;
+ --bg:#031d15;
+ --card:#063b29;
+ --border:#168451;
+ --text:#f3fff7;
+ --muted:#a8c5b4;
+ --red:#e74c3c;
+ --gold:#ffc928;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:Arial,sans-serif;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+.sidebar{
+ width:220px;background:linear-gradient(180deg,#002a1b,#064b30);
+ position:fixed;top:0;bottom:0;left:0;overflow-y:auto;
+ border-right:1px solid var(--border);z-index:5;
+}
+.brand{text-align:center;padding:18px 8px;border-bottom:1px solid #176b45}
+.logo{
+ width:85px;height:85px;object-fit:contain;
+ border-radius:50%;margin-bottom:5px;
+}
+.brand h2{font-size:18px;margin:5px;color:var(--gold)}
+.brand small{color:#c9e6d5}
+.nav{padding:12px 8px}
+.nav button{
+ width:100%;padding:13px 12px;margin:3px 0;
+ background:transparent;color:white;border:0;
+ text-align:left;border-radius:9px;font-weight:bold;
+}
+.nav button:hover,.nav button.active{
+ background:linear-gradient(90deg,#00a83c,#08733d);
+ box-shadow:0 5px 15px #0008;
+}
+.main{margin-left:220px;width:calc(100% - 220px)}
+.topbar{
+ background:#003522;border-bottom:1px solid var(--border);
+ padding:15px 22px;display:flex;align-items:center;
+ justify-content:space-between;gap:10px;flex-wrap:wrap;
+ box-shadow:0 5px 20px #0008;
+}
+.topbar h2{margin:0;font-size:21px}
+.topbar small{color:var(--muted)}
+.content{padding:22px;max-width:1700px;margin:auto}
+.page-title{margin:0 0 5px;font-size:27px}
+.subtitle{color:var(--muted);margin:0 0 22px}
+.cards{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:15px;margin-bottom:20px;
+}
+.stat{
+ background:linear-gradient(135deg,#07583a,#002d20);
+ border:1px solid #168653;border-radius:14px;
+ padding:19px;box-shadow:0 7px 18px #0008;
+ min-width:0;
+}
+.stat .label{color:#b6d8c3;font-size:13px}
+.stat .number{font-size:25px;font-weight:bold;margin-top:9px}
+.stat .symbol{font-size:25px;float:right}
+.panel{
+ background:linear-gradient(145deg,#07432d,#02291c);
+ border:1px solid #168653;border-radius:14px;
+ padding:17px;margin-bottom:18px;
+ box-shadow:0 7px 20px #0008;
+}
+.panel h3{margin:0 0 15px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}
+.btn{
+ padding:10px 15px;border:0;border-radius:8px;
+ background:#078a48;color:white;font-weight:bold;
+}
+.btn:hover{filter:brightness(1.15)}
+.btn.gold{background:#bd8a08;color:#fff}
+.btn.red{background:#a82b30}
+.btn.gray{background:#426052}
+input,select,textarea{
+ background:#092e21;color:white;border:1px solid #277c52;
+ border-radius:7px;padding:11px;width:100%;min-width:0;
+}
+input::placeholder,textarea::placeholder{color:#9bb8a6}
+label{font-size:13px;color:#b8d6c4;display:block;margin-bottom:6px}
+.formgrid{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:12px;margin-bottom:15px;
+}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th{
+ background:#087342;color:white;text-align:left;
+ padding:12px;font-size:13px;
+}
+td{padding:11px;border-bottom:1px solid #19573b;font-size:13px}
+tr:hover td{background:#ffffff0b}
+.actions{display:flex;gap:5px;flex-wrap:wrap}
+.actions button{padding:6px 9px;font-size:12px}
+.badge{
+ background:#087b45;padding:5px 9px;
+ border-radius:20px;font-size:11px;
+}
+.badge.red{background:#9c2929}
+.badge.gold{background:#92700b}
+.hidden{display:none!important}
+.menu-table{width:100%;min-width:0}
+.menu-table td:first-child{font-weight:bold;color:#baffd1}
+.empty{text-align:center;color:#9dbba9;padding:25px}
+.footer{text-align:center;color:#769b85;padding:20px;font-size:12px}
+.mobile-menu{display:none}
+@media(max-width:1050px){
+ .cards{grid-template-columns:repeat(2,1fr)}
+ .formgrid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:700px){
+ .sidebar{width:0;overflow:hidden}
+ .sidebar.open{width:235px}
+ .main{margin-left:0;width:100%}
+ .mobile-menu{display:inline-block}
+ .content{padding:12px}
+ .topbar{padding:12px}
+ .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .stat{padding:12px}
+ .stat .number{font-size:19px}
+ .grid2{grid-template-columns:1fr}
+ .formgrid{grid-template-columns:1fr}
+ .page-title{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<aside class="sidebar" id="sidebar">
+ <div class="brand">
+  <div style="font-size:57px">🛡️</div>
+  <h2>CRPF MESS</h2>
+  <small>Management System</small>
+ </div>
+ <nav class="nav" id="navigation"></nav>
+</aside>
+
+<main class="main">
+ <header class="topbar">
+  <div style="display:flex;gap:12px;align-items:center">
+   <button class="btn mobile-menu" onclick="toggleSidebar()">☰</button>
+   <div>
+    <h2>CRPF MESS Management System</h2>
+    <small id="messHeader">Cooking House | Ration | Menu | Accounts</small>
+   </div>
+  </div>
+  <div>
+   <strong id="today"></strong>
+   <span style="margin-left:12px">👤 Mess NCO</span>
+  </div>
+ </header>
+
+ <div class="content" id="content"></div>
+ <div class="footer">CRPF MESS MANAGEMENT SYSTEM • Local Edition</div>
+</main>
+</div>
+
+<script>
+const KEY="crpf_mess_complete_v1";
+
+const pages=[
+ ["dashboard","▦","Dashboard"],
+ ["members","♟","Members"],
+ ["store","▣","Ration Store"],
+ ["purchases","🛒","Purchases"],
+ ["recipes","♨","Recipes"],
+ ["menu","▦","Making Menu"],
+ ["staff","♟","Mess Staff"],
+ ["accounts","₹","Accounts"],
+ ["reports","▤","Reports & Records"],
+ ["handover","⇄","Mess Handover"],
+ ["settings","⚙","Settings"],
+ ["backup","▤","Backup & Restore"]
+];
+
+const fields={
+ members:[
+  ["forceNo","Force Number"],["name","Full Name"],
+  ["rank","Rank","select","Constable,Head Constable,ASI,SI,Inspector,Other"],
+  ["advance","Opening Mess Advance","number"],
+  ["joining","Joining Date","date"],
+  ["contact","Contact Number"],
+  ["status","Status","select","Active,Transferred,Inactive"],
+  ["notes","Other Details"]
+ ],
+ store:[
+  ["name","Ration Item Name"],["category","Category"],
+  ["qty","Opening Quantity","number"],
+  ["unit","Unit","select","kg,g,ltr,ml,piece,packet"],
+  ["rate","Unit Price (Rs)","number"],
+  ["minimum","Minimum Stock","number"]
+ ],
+ purchases:[
+  ["date","Purchase Date","date"],["bill","Bill Number"],
+  ["supplier","Supplier Name"],["item","Ration Item","item"],
+  ["qty","Purchase Quantity","number"],
+  ["unit","Purchase Unit","select","kg,g,ltr,ml,piece,packet"],
+  ["rate","Unit Price (Rs)","number"]
+ ],
+ recipes:[
+  ["name","Recipe Name"],["servings","Servings","number"],
+  ["ingredients","Ingredients (Item:Qty:Unit, comma separated)"],
+  ["notes","Instructions"]
+ ],
+ menu:[
+  ["date","Menu Date","date"],
+  ["meal","Meal Type","select","Morning Tea,Breakfast,Lunch,Midday Tea,Dinner"],
+  ["recipe","Recipe Name","recipe"],
+  ["servings","Number of Servings","number"]
+ ],
+ staff:[
+  ["forceNo","Force Number"],["name","Staff Name"],
+  ["rank","Rank"],["duty","Duty","select","Mess NCO,Mess SO,Cook,Assistant Cook,Storekeeper,Mess Staff"],
+  ["start","Duty Start Date","date"],["end","Duty End Date","date"],
+  ["status","Status","select","Active,Relieved"]
+ ],
+ accounts:[
+  ["date","Transaction Date","date"],
+  ["forceNo","Member Force Number"],
+  ["name","Member / Payee Name"],
+  ["type","Transaction Type","select","Advance Received,Ration Deduction,Other Expense,Refund,Other Deposit"],
+  ["amount","Amount (Rs)","number"],
+  ["reference","Bill / Reference Number"],
+  ["notes","Details"]
+ ]
+};
+
+const blank={
+ members:[],store:[],purchases:[],recipes:[],menu:[],
+ staff:[],accounts:[],expenses:[],handover:[],
+ settings:{mess:"CRPF MESS - A Coy",limit:4000,currency:"Rs"}
+};
+
+let db;
+try{
+ db=JSON.parse(localStorage.getItem(KEY))||structuredClone(blank);
+}catch(e){db=structuredClone(blank)}
+
+function save(){
+ localStorage.setItem(KEY,JSON.stringify(db));
+}
+function money(n){
+ return "Rs "+Number(n||0).toLocaleString("en-IN",{maximumFractionDigits:2});
+}
+function num(n){return Number(n)||0}
+function esc(v){
+ return String(v??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+function today(){
+ return new Date().toISOString().slice(0,10);
+}
+document.getElementById("today").textContent=
+ new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+
+let current="dashboard";
+let editing=null;
+
+function toggleSidebar(){
+ document.getElementById("sidebar").classList.toggle("open");
+}
+
+function nav(){
+ document.getElementById("navigation").innerHTML=pages.map(p=>
+ `<button class="${current===p[0]?'active':''}" onclick="go('${p[0]}')">
+ ${p[1]} &nbsp; ${p[2]}</button>`
+ ).join("");
+}
+function go(page){
+ current=page;editing=null;nav();render();
+ document.getElementById("sidebar").classList.remove("open");
+}
+
+function render(){
+ if(current==="dashboard")return dashboard();
+ if(current==="reports")return reports();
+ if(current==="handover")return handover();
+ if(current==="settings")return settings();
+ if(current==="backup")return backup();
+ if(current==="accounts")return listPage("accounts");
+ listPage(current);
+}
+
+function heading(title,sub){
+ return `<h1 class="page-title">${title}</h1><p class="subtitle">${sub}</p>`;
+}
+
+function stat(title,value,icon){
+ return `<div class="stat"><span class="symbol">${icon}</span>
+ <div class="label">${title}</div><div class="number">${value}</div></div>`;
+}
+
+function balance(){
+ let received=db.accounts.filter(x=>x.type==="Advance Received"||x.type==="Other Deposit")
+ .reduce((a,x)=>a+num(x.amount),0);
+ let deductions=db.accounts.filter(x=>x.type==="Ration Deduction")
+ .reduce((a,x)=>a+num(x.amount),0);
+ let expenses=db.accounts.filter(x=>x.type==="Other Expense")
+ .reduce((a,x)=>a+num(x.amount),0);
+ return {received,deductions,expenses,remaining:received-deductions-expenses};
+}
+
+function dashboard(){
+ let active=db.members.filter(x=>x.status==="Active").length;
+ let stockValue=db.store.reduce((a,x)=>a+num(x.qty)*num(x.rate),0);
+ let purchaseTotal=db.purchases.reduce((a,x)=>a+num(x.qty)*num(x.rate),0);
+ let b=balance();
+ let todayMenu=db.menu.filter(x=>x.date===today());
+ document.getElementById("content").innerHTML=`
+ ${heading("▦ Dashboard","Overview of CRPF MESS Operations")}
+ <div class="cards">
+ ${stat("Active Members",active,"♟")}
+ ${stat("Mess Advance",money(db.members.reduce((a,x)=>a+num(x.advance),0)),"₹")}
+ ${stat("Ration Stock Items",db.store.length,"▣")}
+ ${stat("Stock Value",money(stockValue),"📦")}
+ ${stat("Today's Meals",todayMenu.length,"🍽")}
+ ${stat("Total Purchases",money(purchaseTotal),"🛒")}
+ ${stat("Total Expenses",money(b.expenses),"📄")}
+ ${stat("Remaining Accounts Balance",money(b.remaining),"₹")}
+ </div>
+ <div class="grid2">
+ <section class="panel">
+  <h3>🍽 Today's Menu</h3>
+  ${todayMenu.length?`<table class="menu-table"><tr><th>Meal</th><th>Recipe</th><th>Servings</th></tr>
+  ${todayMenu.map(x=>`<tr><td>${esc(x.meal)}</td><td>${esc(x.recipe)}</td><td>${esc(x.servings)}</td></tr>`).join("")}</table>`:
+  `<div class="empty">No menu entered for today</div>`}
+ </section>
+ <section class="panel">
+  <h3>💰 Mess Balance Summary</h3>
+  <p>Deposits / Advances: <b>${money(b.received)}</b></p>
+  <p>Ration deductions: <b>${money(b.deductions)}</b></p>
+  <p>Other expenses: <b>${money(b.expenses)}</b></p>
+  <hr style="border-color:#168653">
+  <h2 style="color:#50e28c">${money(b.remaining)}</h2>
+  Remaining balance
+ </section>
+ </div>
+ <div class="panel">
+ <h3>📦 Ration Stock Status</h3>
+ <div class="table-wrap"><table><tr><th>Item</th><th>Quantity</th><th>Unit</th><th>Rate</th><th>Value</th></tr>
+ ${db.store.map(x=>`<tr><td>${esc(x.name)}</td><td>${num(x.qty)}</td><td>${esc(x.unit)}</td><td>${money(x.rate)}</td><td>${money(num(x.qty)*num(x.rate))}</td></tr>`).join("")||'<tr><td colspan="5" class="empty">No stock items</td></tr>'}
+ </table></div></div>`;
+}
+
+function selectOptions(f){
+ if(f[2]==="select"){
+ return f[3].split(",").map(x=>`<option>${esc(x)}</option>`).join("");
+ }
+ if(f[2]==="item"){
+ return db.store.map(x=>`<option>${esc(x.name)}</option>`).join("");
+ }
+ if(f[2]==="recipe"){
+ return db.recipes.map(x=>`<option>${esc(x.name)}</option>`).join("");
+ }
+ return "";
+}
+
+function fieldHTML(f,value=""){
+ let [key,label,type="text"]=f;
+ let val=esc(value);
+ if(type==="select"||type==="item"||type==="recipe"){
+ return `<div><label>${label}</label><select name="${key}">${selectOptions(f)}</select></div>`;
+ }
+ if(key==="notes"||key==="ingredients"){
+ return `<div><label>${label}</label><textarea name="${key}" rows="2">${val}</textarea></div>`;
+ }
+ return `<div><label>${label}</label><input name="${key}" type="${type}" value="${val}" ${type==="number"?'step="any"':''}></div>`;
+}
+
+function listPage(key){
+ let title=pages.find(x=>x[0]===key)?.[2]||key;
+ let data=db[key]||[];
+ let search=`<input id="search" placeholder="Search ${title}..." oninput="filterRows()" style="max-width:240px">`;
+ let cols=fields[key];
+ let form=editing!==null?data[editing]:{};
+ let formHTML=editing!==null?`
+ <div class="panel">
+ <h3>${form.id?"Edit":"Add"} ${title}</h3>
+ <form id="entryForm">
+ <div class="formgrid">${cols.map(f=>fieldHTML(f,form[f[0]]??"")).join("")}</div>
+ <div class="toolbar"><button class="btn" type="submit">Save Record</button>
+ <button class="btn gray" type="button" onclick="cancelEdit()">Cancel</button></div>
+ </form></div>`:"";
+ document.getElementById("content").innerHTML=`
+ ${heading(title,"Manage and maintain your mess records")}
+ <div class="toolbar">
+ <button class="btn" onclick="newRecord('${key}')">＋ Add New</button>
+ ${search}
+ </div>
+ ${formHTML}
+ <div class="panel"><div class="table-wrap">
+ <table id="dataTable">
+ <thead><tr>${cols.map(f=>`<th>${f[1]}</th>`).join("")}<th>Actions</th></tr></thead>
+ <tbody>${data.map((x,i)=>`
+ <tr>${cols.map(f=>`<td>${esc(x[f[0]])}</td>`).join("")}
+ <td><div class="actions">
+ <button class="btn gray" onclick="viewRecord('${key}',${i})">View</button>
+ <button class="btn gold" onclick="editRecord('${key}',${i})">Edit</button>
+ <button class="btn red" onclick="deleteRecord('${key}',${i})">Delete</button>
+ </div></td></tr>`).join("")||
+ `<tr><td colspan="${cols.length+1}" class="empty">No records added yet</td></tr>`}
+ </tbody></table></div></div>`;
+
+ let formEl=document.getElementById("entryForm");
+ if(formEl)formEl.onsubmit=e=>{
+  e.preventDefault();
+  let obj=Object.fromEntries(new FormData(formEl).entries());
+  cols.forEach(f=>{
+   if(f[2]==="number")obj[f[0]]=num(obj[f[0]]);
+  });
+  if(key==="purchases")addPurchase(obj);
+  else if(key==="accounts")addAccount(obj);
+  else if(key==="menu")addMenu(obj);
+  else if(key==="store")addStore(obj);
+  else{
+   if(editing!==null)data[editing]={...data[editing],...obj};
+   else data.push({...obj,id:Date.now()});
+  }
+  save();editing=null;render();
+ };
+}
+
+function newRecord(key){editing=null;listPage(key)}
+function cancelEdit(){editing=null;render()}
+function editRecord(key,i){editing=i;listPage(key)}
+function viewRecord(key,i){
+ let x=db[key][i];
+ let cols=fields[key];
+ alert(cols.map(f=>f[1]+": "+(x[f[0]]??"")).join("\n"));
+}
+function deleteRecord(key,i){
+ if(!confirm("Delete this record? This action may affect linked records."))return;
+ if(key==="purchases")reversePurchase(db.purchases[i]);
+ if(key==="menu")reverseMenu(db.menu[i]);
+ db[key].splice(i,1);save();render();
+}
+function filterRows(){
+ let q=document.getElementById("search").value.toLowerCase();
+ document.querySelectorAll("#dataTable tbody tr").forEach(r=>{
+ r.style.display=r.innerText.toLowerCase().includes(q)?"":"none";
+ });
+}
+
+function addStore(obj){
+ if(editing!==null){
+  let old=db.store[editing];
+  db.store[editing]={...old,...obj};
+ }else db.store.push({...obj,id:Date.now()});
+}
+function convertQty(q,u){
+ if(u==="kg")return q*1000;
+ if(u==="g")return q;
+ if(u==="ltr")return q*1000;
+ if(u==="ml")return q;
+ return q;
+}
+function addPurchase(obj){
+ let item=db.store.find(x=>x.name===obj.item);
+ if(!item){alert("Please add this item to Ration Store first.");return;}
+ let q=convertQty(num(obj.qty),obj.unit);
+ let oldQty=num(item.qty);
+ let newQty=oldQty+q;
+ let oldValue=oldQty*num(item.rate);
+ let newValue=q*num(obj.rate);
+ item.rate=newQty?(oldValue+newValue)/newQty:0;
+ item.qty=newQty;
+ db.purchases.push({...obj,baseQty:q,id:Date.now()});
+}
+function reversePurchase(p){
+ let item=db.store.find(x=>x.name===p.item);
+ if(item){
+  item.qty=Math.max(0,num(item.qty)-num(p.baseQty));
+ }
+}
+function addAccount(obj){
+ db.accounts.push({...obj,id:Date.now()});
+}
+function addMenu(obj){
+ db.menu.push({...obj,id:Date.now()});
+}
+function reverseMenu(m){
+ // Stock deduction is performed when meals are confirmed.
+}
+
+function reports(){
+ let purchases=db.purchases.reduce((a,x)=>a+num(x.qty)*num(x.rate),0);
+ let b=balance();
+ document.getElementById("content").innerHTML=`
+ ${heading("Reports & Records","Financial and ration management reports")}
+ <div class="cards">
+ ${stat("Total Members",db.members.length,"♟")}
+ ${stat("Purchases",money(purchases),"🛒")}
+ ${stat("Account Deposits",money(b.received),"₹")}
+ ${stat("Other Expenses",money(b.expenses),"📄")}
+ </div>
+ <div class="panel">
+ <h3>Member Payment / Advance Report</h3>
+ <div class="table-wrap"><table><tr><th>Force No</th><th>Name</th><th>Rank</th><th>Advance</th><th>Status</th></tr>
+ ${db.members.map(x=>`<tr><td>${esc(x.forceNo)}</td><td>${esc(x.name)}</td><td>${esc(x.rank)}</td><td>${money(x.advance)}</td><td>${esc(x.status)}</td></tr>`).join("")}
+ </table></div>
+ </div>
+ <div class="panel">
+ <h3>Purchase Register</h3>
+ <div class="table-wrap"><table><tr><th>Date</th><th>Bill</th><th>Supplier</th><th>Item</th><th>Quantity</th><th>Total</th></tr>
+ ${db.purchases.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.bill)}</td><td>${esc(x.supplier)}</td><td>${esc(x.item)}</td><td>${x.qty} ${esc(x.unit)}</td><td>${money(num(x.qty)*num(x.rate))}</td></tr>`).join("")}
+ </table></div>
+ </div>
+ <div class="toolbar">
+ <button class="btn" onclick="window.print()">Print / Save PDF</button>
+ <button class="btn gray" onclick="exportCSV()">Export CSV</button>
+ </div>`;
+}
+
+function handover(){
+ let b=balance();
+ document.getElementById("content").innerHTML=`
+ ${heading("Mess Handover","Outgoing and incoming Mess NCO handover register")}
+ <div class="cards">
+ ${stat("Available Cash",money(b.remaining),"₹")}
+ ${stat("Member Advances",money(db.members.reduce((a,x)=>a+num(x.advance),0)),"♟")}
+ ${stat("Ration Items",db.store.length,"📦")}
+ ${stat("Pending Bills",money(0),"📄")}
+ </div>
+ <div class="panel">
+ <h3>Handover Details</h3>
+ <form id="handoverForm">
+ <div class="formgrid">
+ <div><label>Handover Date</label><input type="date" name="date" value="${today()}" required></div>
+ <div><label>Outgoing NCO</label><input name="outgoing" required></div>
+ <div><label>Incoming NCO</label><input name="incoming" required></div>
+ <div><label>Cash Balance (Rs)</label><input name="cash" type="number" value="${b.remaining}"></div>
+ <div><label>Pending Bills (Rs)</label><input name="bills" type="number" value="0"></div>
+ <div><label>Remarks</label><input name="remarks"></div>
+ </div>
+ <button class="btn">Save Handover</button>
+ <button class="btn gray" type="button" onclick="window.print()">Print Handover</button>
+ </form></div>
+ <div class="panel"><h3>Previous Handovers</h3>
+ <table><tr><th>Date</th><th>Outgoing</th><th>Incoming</th><th>Cash</th></tr>
+ ${db.handover.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.outgoing)}</td><td>${esc(x.incoming)}</td><td>${money(x.cash)}</td></tr>`).join("")}
+ </table></div>`;
+ document.getElementById("handoverForm").onsubmit=e=>{
+  e.preventDefault();
+  db.handover.push(Object.fromEntries(new FormData(e.target)));
+  save();render();
+ };
+}
+
+function settings(){
+ document.getElementById("content").innerHTML=`
+ ${heading("Settings","Configure your mess")}
+ <div class="panel">
+ <form id="settingsForm">
+ <div class="formgrid">
+ <div><label>Mes
